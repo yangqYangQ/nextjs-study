@@ -1,13 +1,13 @@
 import { sql } from '@vercel/postgres';
-import {
-  CustomerField,
-  CustomersTableType,
-  InvoiceForm,
-  InvoicesTable,
-  LatestInvoiceRaw,
-  User,
-  Revenue,
-} from './definitions';
+// import {
+//   CustomerField,
+//   CustomersTableType,
+//   InvoiceForm,
+//   InvoicesTable,
+//   LatestInvoiceRaw,
+//   User,
+//   Revenue,
+// } from './definitions';
 import { formatCurrency } from './utils';
 
 export async function fetchRevenue() {
@@ -21,7 +21,7 @@ export async function fetchRevenue() {
     // console.log('Fetching revenue data...');
     // await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    const data = await sql<Revenue>`SELECT * FROM revenue`;
+    const data = await sql`SELECT * FROM revenue`;
 
     // console.log('Data fetch completed after 3 seconds.');
 
@@ -34,7 +34,7 @@ export async function fetchRevenue() {
 
 export async function fetchLatestInvoices() {
   try {
-    const data = await sql<LatestInvoiceRaw>`
+    const data = await sql`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
       FROM invoices
       JOIN customers ON invoices.customer_id = customers.id
@@ -89,13 +89,13 @@ export async function fetchCardData() {
 
 const ITEMS_PER_PAGE = 6;
 export async function fetchFilteredInvoices(
-  query: string,
-  currentPage: number,
+  query,
+  currentPage,
 ) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
-    const invoices = await sql<InvoicesTable>`
+    const invoices = await sql`
       SELECT
         invoices.id,
         invoices.amount,
@@ -123,7 +123,7 @@ export async function fetchFilteredInvoices(
   }
 }
 
-export async function fetchInvoicesPages(query: string) {
+export async function fetchInvoicesPages(query) {
   try {
     const count = await sql`SELECT COUNT(*)
     FROM invoices
@@ -144,9 +144,9 @@ export async function fetchInvoicesPages(query: string) {
   }
 }
 
-export async function fetchInvoiceById(id: string) {
+export async function fetchInvoiceById(id) {
   try {
-    const data = await sql<InvoiceForm>`
+    const data = await sql`
       SELECT
         invoices.id,
         invoices.customer_id,
@@ -171,7 +171,7 @@ export async function fetchInvoiceById(id: string) {
 
 export async function fetchCustomers() {
   try {
-    const data = await sql<CustomerField>`
+    const data = await sql`
       SELECT
         id,
         name
@@ -187,9 +187,9 @@ export async function fetchCustomers() {
   }
 }
 
-export async function fetchFilteredCustomers(query: string) {
+export async function fetchFilteredCustomers(query) {
   try {
-    const data = await sql<CustomersTableType>`
+    const data = await sql`
 		SELECT
 		  customers.id,
 		  customers.name,
@@ -220,10 +220,10 @@ export async function fetchFilteredCustomers(query: string) {
   }
 }
 
-export async function getUser(email: string) {
+export async function getUser(email) {
   try {
     const user = await sql`SELECT * FROM users WHERE email=${email}`;
-    return user.rows[0] as User;
+    return user.rows[0];
   } catch (error) {
     console.error('Failed to fetch user:', error);
     throw new Error('Failed to fetch user.');
